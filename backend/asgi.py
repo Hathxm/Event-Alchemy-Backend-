@@ -4,9 +4,10 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from chat import routing
 import django
-django.setup()
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+django.setup()
 
 
 application = ProtocolTypeRouter({
