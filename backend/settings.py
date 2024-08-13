@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'corsheaders',
     'storages',
-    'Celery',
 ]
 
 MIDDLEWARE = [
@@ -93,7 +92,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+# WSGI_APPLICATION = 'backend.wsgi.application'
 ASGI_APPLICATION = 'backend.asgi.application'
 
 
@@ -205,7 +204,7 @@ EMAIL_HOST_PASSWORD=config('EMAIL_HOST_PASSWORD')
 
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
-# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
