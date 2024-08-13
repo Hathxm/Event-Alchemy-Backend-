@@ -141,6 +141,7 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data['message']
+        print(message)
 
         # Send message to user group
         await self.channel_layer.group_send(
@@ -154,6 +155,7 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
     # Receive message from user group
     async def send_notification(self, event):
         message = event['message']
+        print('hey')
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({

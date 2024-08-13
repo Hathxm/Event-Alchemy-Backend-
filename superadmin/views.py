@@ -17,6 +17,7 @@ from django.utils.crypto import get_random_string
 from rest_framework.permissions import IsAuthenticated
 from vendors.serializers import VendorSerializer
 from vendors.models import Vendors
+from decouple import config
 
 
 
@@ -61,6 +62,7 @@ class login(APIView):
 class EventDetails(APIView):
     def get(self,request):
         events = Events.objects.all().order_by('-created_at')
+        print(config('EMAIL_PORT'))
         serializer = EventSerializer(events,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     

@@ -462,6 +462,7 @@ def check_availability(request):
 
 
 from datetime import datetime, timedelta
+
 class Confirm_Booking(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -469,7 +470,7 @@ class Confirm_Booking(APIView):
         try:
             user = request.user
             venue_id = request.data.get('venueId')
-            services_ids = request.data.get('services', [])
+            services_ids = request.data.get('services')
             booking_details = request.data.get('bookingDetails')
             total_amount = request.data.get('totalAmount')
             advance_paid = request.data.get('amountToPay')
@@ -492,10 +493,10 @@ class Confirm_Booking(APIView):
             shift_duration = (end_time - start_time).total_seconds() / 3600
 
             managers = Managers.objects.filter(manager_type=venue.event_type)
+            status = Booking_status.objects.get(name="Pending")
             if not managers.exists():
                 return Response({"error": "No managers available for this event type."}, status=404)
             manager = random.choice(managers)
-            status = Booking_status.objects.get(name="Pending")
 
             with transaction.atomic():
                 # Create the booking
@@ -508,11 +509,8 @@ class Confirm_Booking(APIView):
                     amount_paid=advance_paid,
                     manager=manager,
                     event_type=venue.event_type,
-                    status=status,
+                    status = status,
                 )
-
-                # Initialize channel layer
-                channel_layer = get_channel_layer()
 
                 # Collect service IDs and vendor notifications
                 service_ids_in_booking = []
@@ -543,8 +541,9 @@ class Confirm_Booking(APIView):
                         )
 
                         # Send notification to vendor's WebSocket channel
+                        channel_layer = get_channel_layer()
                         async_to_sync(channel_layer.group_send)(
-                            f'vendor_{vendor.id}',
+                            f'user_{vendor.id}',
                             {
                                 'type': 'send_notification',
                                 'message': vendor_notification_message
@@ -562,7 +561,7 @@ class Confirm_Booking(APIView):
                 manager.save()
 
                 # Notify the manager
-                services_string = ', '.join(map(str, service_ids_in_booking)) if service_ids_in_booking else "No services selected"
+                services_string = ', '.join(map(str, service_ids_in_booking))
                 manager_notification_message = (
                     f"A new booking has been made for the venue {venue.venue_name} on {booking.date} With Services IDs: {services_string}."
                 )
@@ -573,8 +572,9 @@ class Confirm_Booking(APIView):
                 )
 
                 # Send notification to manager's WebSocket channel
+                channel_layer = get_channel_layer()
                 async_to_sync(channel_layer.group_send)(
-                    f'manager_{manager.id}',
+                     f'user_{manager.id}',
                     {
                         'type': 'send_notification',
                         'message': manager_notification_message
@@ -720,7 +720,7 @@ class CancelBookingView(APIView):
                 # Notify manager via WebSocket
                 channel_layer = get_channel_layer()
                 async_to_sync(channel_layer.group_send)(
-                    f'manager_{manager.id}',
+                    f'user_{manager.id}',
                     {
                         'type': 'send_notification',
                         'message': manager_message
@@ -740,7 +740,7 @@ class CancelBookingView(APIView):
 
                     # Notify vendor via WebSocket
                     async_to_sync(channel_layer.group_send)(
-                        f'vendor_{vendor_id}',
+                        f'user_{vendor_id}',
                         {
                             'type': 'send_notification',
                             'message': vendor_message
@@ -813,7 +813,6 @@ class RateBookingView(APIView):
         user = request.user
         booking_id = request.query_params.get('booking_id')
         
-        
         if not booking_id:
             return Response({'error': 'Booking ID not provided.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -850,8 +849,6 @@ class RateBookingView(APIView):
     def post(self, request):
         user = request.user
         booking_id = request.data.get('booking_id')
-        review = request.data.get('review')
-        print(review)
         
         try:
             booking = Booking.objects.get(id=booking_id, customer=user)
@@ -859,23 +856,24 @@ class RateBookingView(APIView):
             return Response({'error': 'Booking not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         booking_rating = request.data.get('booking_rating')
+        review = request.data.get('review')
         if booking_rating is not None:
             booking.rating = booking_rating
             booking.is_rated = True
             booking.review = review
             booking.save()
             manager = booking.manager
-            manager_message = f"{booking.customer.first_name} has rated {booking.rating}  for the booking{booking.id} that was hosted on {booking.date} at {booking.venue.venue_name}."
+            manager_message = f"{booking.customer.first_name} has rated you {booking_rating} for the booking hosted on {booking.date} at {booking.venue.venue_name}."
             Notification.objects.create(
                 user=manager,
                 message=manager_message,
                 booking=booking
             )
 
-            # Notify manager via WebSocket
+                # Notify manager via WebSocket
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                f'manager_{manager.id}',
+                f'user_{manager.id}',
                 {
                     'type': 'send_notification',
                     'message': manager_message
@@ -892,7 +890,7 @@ class RateBookingView(APIView):
             Service_Rating.objects.create(
                 service=service,
                 booking=booking,
-                rating=rating,
+                rating=rating
             )
 
         # Get all services associated with the booking
@@ -911,7 +909,7 @@ class RateBookingView(APIView):
             services_with_ratings.append({
                 'service_id': service.id,
                 'service_name': service.service_type.service_name,
-                'profile_pic':service.vendor.profile_pic.url if service.vendor.profile_pic else None ,
+                'profile_pic':service.vendor.profile_pic if service.vendor.profile_pic else None,
                 'service_image':service.service_type.image.url,
                 'rating': rating
             })
@@ -929,7 +927,6 @@ class ContactFormView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             # Parse JSON data from the request body
-            
             name = request.data.get('name')
             email = request.data.get('email')
             message = request.data.get('message')
@@ -943,6 +940,8 @@ class ContactFormView(APIView):
             # Send email
             send_mail(subject, body, from_email, recipient_list)
 
-            return Response({'status': 'success'}, status=status.HTTP_200_OK)
+            # If email is successfully sent, return 200 status
+            return Response({'status': 'success', 'message': 'Email sent successfully'}, status=status.HTTP_200_OK)
         except Exception as e:
+            # Log the error if needed and return 500 status with error message
             return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
