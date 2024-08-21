@@ -40,6 +40,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 import random
 import string
+from superadmin.serializers import EventSerializer
 
 
 
@@ -49,7 +50,7 @@ import string
 class landingpage(APIView):
     def get(self,request):
         data = Events.objects.all()
-        serializer = VenueSerializer(data, many=True)
+        serializer = EventSerializer(data,many = True)
         return JsonResponse(serializer.data, safe=False)
     
     
@@ -269,6 +270,8 @@ class token_refresh(APIView):
             refresh = RefreshToken(refresh_token)
             access_token = str(refresh.access_token)
             new_refresh_token = str(refresh)
+            
+
             
 
             # Return the new access token

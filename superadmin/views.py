@@ -71,6 +71,7 @@ class EventDetails(APIView):
         event_name = request.data.get('eventname')
         description = request.data.get('description')
         image = request.FILES.get('image')
+        print(image)
 
         if event_name and description:
             event = Events.objects.create(
