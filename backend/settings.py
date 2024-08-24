@@ -264,3 +264,4 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Media files configuration
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+CSRF_TRUSTED_ORIGINS = ['https://event.event-alchemy.fun']
