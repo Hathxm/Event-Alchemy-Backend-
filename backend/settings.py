@@ -61,10 +61,11 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 
-     'corsheaders.middleware.CorsMiddleware',
 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -236,7 +237,6 @@ CELERY_BEAT_SCHEDULE = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL='managers.AllUsers'
 
-CORS_ALLOW_ALL_ORIGINS = True
 
 CHANNEL_LAYERS = {
     'default': {
@@ -265,4 +265,24 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Media files configuration
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-CSRF_TRUSTED_ORIGINS = ['https://event.event-alchemy.fun']
+
+CORS_ORGIN_ALLOW_ALL = True
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://events.event-alchemy.fun",
+    "https://events.event-alchemy.fun",
+]
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "https://events.event-alchemy.fun",
+    "https://events.event-alchemy.fun",
+]
+
