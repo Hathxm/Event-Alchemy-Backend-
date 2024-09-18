@@ -15,6 +15,11 @@ urlpatterns = [
     path('chats/prev_msgs',views.Prev_msgs.as_view(), name='previousmessages'),
     path('google-signup',views.GoogleSignup.as_view(), name='vendor_google_signup'),
     path('updateprofile/',views.UpdateProfile.as_view(),name="vendor_editprofile" ),
+    path('edit-service',views.EditService.as_view(),name="vendor_editservice" ),
+    path('dlt-service',views.ServiceManagement.as_view(),name="vendor_dltservice" ),
+
+
+    
     
 
 

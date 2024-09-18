@@ -26,6 +26,8 @@ from django.db.models.functions import ExtractMonth, ExtractYear
 from datetime import datetime, timedelta
 import random
 import string
+from django.shortcuts import get_object_or_404
+
 
 
 
@@ -228,7 +230,7 @@ class Vendor_Details(APIView):
             try:
                 User = Vendors.objects.get(username=user)
             except Vendors.DoesNotExist:
-                return Response({'error': 'User details not found'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': 'User details not found'}, status=status.HTTP_400_BAD_REQUEST)
 
             serializer = VendorSerializer(User)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -480,3 +482,57 @@ class ContactFormView(APIView):
         except Exception as e:
             # Log the error if needed and return 500 status with error message
             return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class EditService(APIView):
+    def patch(self, request):
+        # Extract the user and service ID
+        user = request.user
+        user = Vendors.objects.get(username=user)
+        service_id = request.data.get('service_id')
+
+        # Get the service instance by ID
+        service_instance = get_object_or_404(vendorservices, id=service_id)
+
+        # Serialize and update the service
+        serializer = VendorserviceSerializer(service_instance, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            # Save the changes
+            serializer.save()
+
+            # Retrieve updated services
+            services = vendorservices.objects.filter(vendor=user)
+            services_serializer = VendorserviceSerializer(services, many=True)
+
+            # Return updated services in a proper JSON response
+            return Response({
+               'success': 'Service added successfully', 'updated_data': services_serializer.data
+            }, status=status.HTTP_200_OK)
+        else:
+            # Return validation errors if any
+            return Response({
+                "message": "Failed to update the service",
+                "errors": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ServiceManagement(APIView):
+    def patch(self, request):
+        service_id = request.data.get('serviceId')
+        is_deleted = request.data.get('is_active')
+        
+     
+
+        if service_id is None or is_deleted is None:
+            return Response({'error': 'Service ID and status are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            service = vendorservices.objects.get(id=service_id)
+        except vendorservices.DoesNotExist:
+            return Response({'error': 'Service not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        service.is_deleted = is_deleted
+        service.save()
+
+        return Response({'success': 'Service status updated successfully'}, status=status.HTTP_200_OK)

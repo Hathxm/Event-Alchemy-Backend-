@@ -53,16 +53,20 @@ class login(APIView):
         user = authenticate(username=username,password=password)
         
         print(user)
-
      
         if user is None:
             return Response({"error": "Invalid Password"})
         
-        serializer=ManagerSerializer(user)
+        try:
+                manager = Managers.objects.get(username=user)
+        except Managers.DoesNotExist:
+                return Response({'error': 'Manager details not found'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer=ManagerSerializer(manager)
 
         refresh = RefreshToken.for_user(user)
         refresh['username'] = str(user.username)
-        
+        print(serializer.data)       
 
         content = {
             'refresh': str(refresh),
@@ -81,7 +85,7 @@ class ManagerDetails(APIView):
             try:
                 manager = Managers.objects.get(username=user)
             except Managers.DoesNotExist:
-                return Response({'error': 'Manager details not found'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': 'Manager details not found'}, status=status.HTTP_400_BAD_REQUEST)
 
             serializer = ManagerSerializer(manager)
             return Response(serializer.data, status=status.HTTP_200_OK)

@@ -38,7 +38,6 @@ from django.contrib import messages
 from django.db.models import Max
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-import random
 import string
 from superadmin.serializers import EventSerializer
 
@@ -352,10 +351,11 @@ class Venueservices(APIView):
         # Get the related event and its services
         event = venue.event_type
         services = event.services.all()
+        print(services)
         
         # Find all vendor services that match these services
         vendor_services = vendorservices.objects.filter(service_type__in=services,location=venue.location,is_deleted=False)
-        
+        print(venue.location)
         # Serialize the vendor services
         vendor_services_serializer = VendorserviceSerializer(vendor_services, many=True)
         
