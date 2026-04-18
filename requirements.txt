@@ -23,6 +23,7 @@ constantly==23.10.4
 cron-descriptor==1.4.3
 cryptography==42.0.8
 daphne==4.1.2
+dj-database-url==2.2.0
 dj-rest-auth==6.0.0
 Django==5.0.4
 django-allauth==0.63.3

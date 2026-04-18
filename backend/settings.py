@@ -15,6 +15,7 @@ import os
 from datetime import timedelta
 from celery.schedules import crontab
 from decouple import config
+import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -103,14 +104,10 @@ ASGI_APPLICATION = 'backend.asgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('NAME'),
-        'USER': config('USER'),
-        'PASSWORD': config('PASSWORD'),
-        'HOST': 'localhost',   # Or your PostgreSQL host IP address
-        'PORT': '5432',        # Default PostgreSQL port
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='postgresql://localhost/eventalchemy'),
+        conn_max_age=600
+    )
 }
 
 SITE_ID = 1
