@@ -248,23 +248,20 @@ CHANNEL_LAYERS = {
 }
 
 
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = 'event-alchemy'
-AWS_S3_REGION_NAME = 'eu-north-1'  # e.g., 'us-west-1'
+# AWS S3 configuration (disabled - using local media storage)
+# AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+# AWS_STORAGE_BUCKET_NAME = 'event-alchemy'
+# AWS_S3_REGION_NAME = 'eu-north-1'
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
+# AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None  # Handle permissions via the S3 bucket policy
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-# Static files configuration (if you want to use S3 for static files too)
-# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
-# STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
-
-# Media files configuration
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+# Local media storage
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 CORS_ORGIN_ALLOW_ALL = True
 
@@ -276,6 +273,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://events.event-alchemy.fun",
     "https://events.event-alchemy.fun",
+    "https://event-alchemy-frontend-vued.vercel.app/"
 ]
 
 
@@ -284,5 +282,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "https://events.event-alchemy.fun",
     "https://events.event-alchemy.fun",
+    "https://event-alchemy-frontend-vued.vercel.app/"
 ]
 

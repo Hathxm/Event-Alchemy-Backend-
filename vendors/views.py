@@ -197,17 +197,17 @@ class login(APIView):
      
         if user is None:
             return Response({"error": "Invalid Password"})
-        
-        serializer=VendorSerializer(user)
-        refresh = RefreshToken.for_user(user)
-        refresh['username'] = str(user.username)
 
-        
+        vendor = Vendors.objects.get(pk=user.pk)
+        serializer=VendorSerializer(vendor)
+        refresh = RefreshToken.for_user(vendor)
+        refresh['username'] = str(vendor.username)
 
         content = {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
             'vendor_details':serializer.data,
+            'is_vendor': vendor.is_vendor
         }
 
         return Response(content, status=status.HTTP_200_OK)
