@@ -49,7 +49,7 @@ kombu==5.3.7
 msgpack==1.0.8
 oauthlib==3.2.2
 packaging==26.1
-pillow==10.3.0
+Pillow==10.3.0
 prompt_toolkit==3.0.47
 psycopg2==2.9.9
 psycopg2-binary==2.9.11
