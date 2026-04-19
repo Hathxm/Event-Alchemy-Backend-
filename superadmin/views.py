@@ -248,6 +248,57 @@ class RejectVendorView(APIView):
             return Response({'error': f'Something went wrong: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# ============================================================
+# DELETE THIS AFTER SETUP — ONE-TIME SUPERUSER CREATION ENDPOINT
+# ============================================================
+class CreateSuperuserView(APIView):
+    """
+    Temporary endpoint to bootstrap a superuser when direct DB/shell
+    access is unavailable. DELETE THIS VIEW AND ITS URL AFTER USE.
+
+    POST /api/setup/create-superuser/
+    {
+        "username": "hathxm420",
+        "email": "hathxm420@example.com",
+        "password": "yourpassword"
+    }
+    """
+    def post(self, request):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if not all([username, email, password]):
+            return Response(
+                {'error': 'username, email, and password are all required.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if AllUsers.objects.filter(username=username).exists():
+            return Response(
+                {'error': f'User "{username}" already exists. Endpoint blocked to prevent accidental re-creation.'},
+                status=status.HTTP_409_CONFLICT
+            )
+
+        user = AllUsers.objects.create(
+            username=username,
+            email=email,
+            password=make_password(password),
+            is_staff=True,
+            is_superuser=True,
+            is_active=True,
+            bio='',
+        )
+
+        return Response(
+            {'success': f'Superuser "{user.username}" created successfully. PLEASE DELETE THIS ENDPOINT NOW.'},
+            status=status.HTTP_201_CREATED
+        )
+# ============================================================
+# END OF TEMPORARY ENDPOINT — DELETE THIS AFTER SETUP
+# ============================================================
+
+
 class ManagerProfileRatingsView(APIView):
     def get(self, request):
         manager_id = request.query_params.get('manager_id')
