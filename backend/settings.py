@@ -270,7 +270,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://events.event-alchemy.fun",
-    "https://event-alchemy-frontend-vued.vercel.app/"
+    "https://event-alchemy-frontend-vued.vercel.app"
 ]
 
 
@@ -278,6 +278,6 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "https://events.event-alchemy.fun",
-    "https://event-alchemy-frontend-vued.vercel.app/"
+    "https://event-alchemy-frontend-vued.vercel.app"
 ]
 
