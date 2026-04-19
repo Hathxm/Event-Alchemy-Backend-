@@ -263,6 +263,9 @@ class CreateSuperuserView(APIView):
         "password": "yourpassword"
     }
     """
+    authentication_classes = []
+    permission_classes = []
+
     def post(self, request):
         username = request.data.get('username')
         email = request.data.get('email')
