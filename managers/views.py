@@ -634,7 +634,7 @@ class HostedBookingView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=500) 
 
-class CreateSuperUser(APIView):
+class CreateSuperUser():
     def post(self, request):
         username = request.data.get('username')
         email = request.data.get('email')
