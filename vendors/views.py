@@ -74,7 +74,7 @@ def send_otp_email(email, otp):
     message = f'Your OTP is: {otp}'
     
     # Send email
-    send_mail(subject, message, "eventalchemy@gmail.com", [email], fail_silently=False)
+    send_mail(subject, message, "eventalchemy1246@gmail.com", [email], fail_silently=False)
 
   
 class GoogleSignup(APIView):
@@ -471,7 +471,7 @@ class ContactFormView(APIView):
             # Email content
             subject = 'New Contact Form Submission'
             body = f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
-            from_email = 'your-email@gmail.com'  # Replace with your email
+            from_email = 'eventalchemy1246@gmail.com'
             recipient_list = ['mohammedhathimeasa@gmail.com']  # Replace with superadmin's email
 
             # Send email

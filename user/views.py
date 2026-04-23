@@ -148,7 +148,7 @@ def send_otp_email(email, otp):
     message = f'Your OTP is: {otp}'
     
     # Send email
-    send_mail(subject, message, "eventalchemy@gmail.com", [email], fail_silently=False)
+    send_mail(subject, message, "eventalchemy1246@gmail.com", [email], fail_silently=False)
 
 
 class OTP(APIView):
@@ -213,7 +213,7 @@ def resend_otp_mail(mail):
         subject = 'Your OTP for account verification'
         message = f'Your OTP is: {otp}'
 
-        send_mail(subject, message, "eventalchemy@gmail.com", [email], fail_silently=False)
+        send_mail(subject, message, "eventalchemy1246@gmail.com", [email], fail_silently=False)
         return otp
 
 
@@ -640,7 +640,7 @@ class PasswordResetRequestView(APIView):
             email_message = EmailMultiAlternatives(
                 subject=mail_subject,
                 body='',
-                from_email='no-reply@myapp.com',
+                from_email='eventalchemy1246@gmail.com',
                 to=[email],
             )
             email_message.attach_alternative(message, "text/html")
@@ -783,7 +783,7 @@ class ForgotPasswordView(APIView):
             send_mail(
                 'Password Reset Request',
                 f'Your one-time password (OTP) is: {otp}',
-                settings.DEFAULT_FROM_EMAIL,  # Use the DEFAULT_FROM_EMAIL from settings
+                'eventalchemy1246@gmail.com',  # Use the hardcoded email
                 [email],
                 fail_silently=False,
             )
@@ -937,7 +937,7 @@ class ContactFormView(APIView):
             # Email content
             subject = 'New Contact Form Submission'
             body = f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
-            from_email = 'your-email@gmail.com'  # Replace with your email
+            from_email = 'eventalchemy1246@gmail.com'  # Use the hardcoded email
             recipient_list = ['mohammedhathimeasa@gmail.com']  # Replace with superadmin's email
 
             # Send email

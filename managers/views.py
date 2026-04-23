@@ -365,7 +365,7 @@ class PasswordResetRequestView(APIView):
             email_message = EmailMultiAlternatives(
                 subject=mail_subject,
                 body='',
-                from_email='no-reply@myapp.com',
+                from_email=settings.EMAIL_HOST_USER,
                 to=[email],
             )
             email_message.attach_alternative(message, "text/html")
