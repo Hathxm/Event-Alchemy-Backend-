@@ -20,6 +20,46 @@ from vendors.models import Vendors
 from decouple import config
 
 
+# ⚠️  DELETE THIS AFTER SETUP — temporary one-time superuser creation endpoint
+class CreateSuperUserView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if not all([username, email, password]):
+            return Response(
+                {"error": "username, email, and password are all required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if AllUsers.objects.filter(username=username).exists():
+            return Response(
+                {"error": f"User '{username}' already exists. Endpoint should be deleted now."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            hashed_password = make_password(password)
+            AllUsers.objects.create(
+                username=username,
+                email=email,
+                password=hashed_password,
+                is_staff=True,
+                is_superuser=True,
+                is_active=True,
+            )
+            return Response(
+                {"success": f"Superuser '{username}' created successfully. DELETE THIS ENDPOINT NOW."},
+                status=status.HTTP_201_CREATED,
+            )
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 
 # Create your views here.

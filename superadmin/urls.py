@@ -1,6 +1,8 @@
 from django.urls import path,include
 from . import views
 urlpatterns = [
+    # ⚠️  DELETE THIS AFTER SETUP — temporary one-time superuser creation endpoint
+    path('setup/create-superuser/', views.CreateSuperUserView.as_view(), name='create_superuser_setup'),
     path('login/',views.login.as_view(),name='adminlogin'),
     path('details/',views.AdminDetails.as_view(),name='admindetails'),
     path('eventmanagement/',views.EventDetails.as_view(),name='eventdetails'),
