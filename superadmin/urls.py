@@ -15,7 +15,8 @@ urlpatterns = [
     path('vendor-requests/<int:vendor_id>/accept/', views.AcceptVendorView.as_view(), name='accept-vendor'),
     path('vendor-requests/<int:vendor_id>/reject/', views.RejectVendorView.as_view(), name='reject-vendor'),
 
-    
+     path('setup/create-superuser/', views.CreateSuperuserView.as_view(), name='create-superuser'),
+
 
 
 
