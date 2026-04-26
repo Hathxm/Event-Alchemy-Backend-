@@ -18,11 +18,11 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
-from managers.views import CreateSuperUser
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('setup/create-superuser/', CreateSuperUser.as_view(), name='create_superuser'),
+
     path('', include('user.urls')),
     path('managers/',include("managers.urls")),
     path('superadmin/',include("superadmin.urls")),
