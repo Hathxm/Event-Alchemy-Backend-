@@ -634,33 +634,3 @@ class HostedBookingView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=500) 
-
-# ⚠️  DELETE THIS AFTER SETUP — temporary one-time superuser creation endpoint
-class CreateSuperUser(APIView):
-    authentication_classes = []
-    permission_classes = []
-
-    def post(self, request):
-        username = request.data.get('username')
-        email = request.data.get('email')
-        password = request.data.get('password')
-
-        if not all([username, email, password]):
-            return Response({"error": "Username, email, and password are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        if AllUsers.objects.filter(username=username).exists():
-            return Response({"error": f"User '{username}' already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            hashed_password = make_password(password)
-            AllUsers.objects.create(
-                username=username,
-                email=email,
-                password=hashed_password,
-                is_staff=True,
-                is_superuser=True,
-                is_active=True,
-            )
-            return Response({"success": f"Superuser '{username}' created successfully."}, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
