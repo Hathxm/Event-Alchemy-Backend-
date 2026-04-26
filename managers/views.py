@@ -8,8 +8,9 @@ from .serializers import LocationSerializer,ManagerSerializer
 from user.models import Booking,Booking_status
 from user.serializers import BookingSerializer 
 from rest_framework.permissions import IsAuthenticated
-from .models import venues, Managers
+from .models import venues, Managers, AllUsers
 from superadmin.models import location,Events,services
+from django.contrib.auth.hashers import make_password
 from user.serializers import VenueSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.shortcuts import get_object_or_404
@@ -634,7 +635,11 @@ class HostedBookingView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=500) 
 
-class CreateSuperUser():
+# ⚠️  DELETE THIS AFTER SETUP — temporary one-time superuser creation endpoint
+class CreateSuperUser(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     def post(self, request):
         username = request.data.get('username')
         email = request.data.get('email')
@@ -644,10 +649,18 @@ class CreateSuperUser():
             return Response({"error": "Username, email, and password are required."}, status=status.HTTP_400_BAD_REQUEST)
 
         if AllUsers.objects.filter(username=username).exists():
-            return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": f"User '{username}' already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            AllUsers.objects.create_superuser(username=username, email=email, password=password)
-            return Response({"success": "Superuser created successfully."}, status=status.HTTP_201_CREATED)
+            hashed_password = make_password(password)
+            AllUsers.objects.create(
+                username=username,
+                email=email,
+                password=hashed_password,
+                is_staff=True,
+                is_superuser=True,
+                is_active=True,
+            )
+            return Response({"success": f"Superuser '{username}' created successfully."}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
