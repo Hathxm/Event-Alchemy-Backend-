@@ -148,7 +148,7 @@ def send_otp_email(email, otp):
     message = f'Your OTP is: {otp}'
     
     # Send email
-    send_mail(subject, message, "eventalchemy1246@gmail.com", [email], fail_silently=False)
+    send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
 
 
 class OTP(APIView):
@@ -213,7 +213,7 @@ def resend_otp_mail(mail):
         subject = 'Your OTP for account verification'
         message = f'Your OTP is: {otp}'
 
-        send_mail(subject, message, "eventalchemy1246@gmail.com", [email], fail_silently=False)
+        send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
         return otp
 
 

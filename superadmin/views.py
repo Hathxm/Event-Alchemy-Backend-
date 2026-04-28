@@ -18,6 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 from vendors.serializers import VendorSerializer
 from vendors.models import Vendors
 from decouple import config
+from django.conf import settings
 
 
 
@@ -143,7 +144,7 @@ def send_manager_details(email,username,password):
     message = f' Use Your Username And Password to Log In \nUsername:{username}\npassword:{password}'
     
     # Send email
-    send_mail(subject, message, "eventalchemy1246@gmail.com", [email], fail_silently=False)
+    send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
 
 class ManagerManagement(APIView):
     def patch(self,request):

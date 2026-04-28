@@ -74,7 +74,7 @@ def send_otp_email(email, otp):
     message = f'Your OTP is: {otp}'
     
     # Send email
-    send_mail(subject, message, "eventalchemy1246@gmail.com", [email], fail_silently=False)
+    send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
 
   
 class GoogleSignup(APIView):
@@ -421,7 +421,7 @@ class ForgotPasswordView(APIView):
             send_mail(
                 'Password Reset Request',
                 f'Your one-time password (OTP) is: {otp}',
-                settings.DEFAULT_FROM_EMAIL,  # Use the DEFAULT_FROM_EMAIL from settings
+                settings.EMAIL_HOST_USER,  # Use the DEFAULT_FROM_EMAIL from settings
                 [email],
                 fail_silently=False,
             )

@@ -543,7 +543,7 @@ class ForgotPasswordView(APIView):
             send_mail(
                 'Password Reset Request',
                 f'Your one-time password (OTP) is: {otp}',
-                settings.DEFAULT_FROM_EMAIL,  # Use the DEFAULT_FROM_EMAIL from settings
+                settings.EMAIL_HOST_USER,  # Use the DEFAULT_FROM_EMAIL from settings
                 [email],
                 fail_silently=False,
             )
