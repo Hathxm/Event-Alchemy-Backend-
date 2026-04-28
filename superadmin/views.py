@@ -126,7 +126,7 @@ class AddManager(APIView):
         if errors:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
-        Managers.objects.create(
+        manager = Managers.objects.create(
             username=username,
             first_name=name,
             email=email,
@@ -135,8 +135,16 @@ class AddManager(APIView):
             is_Manager=True
         )
 
-        send_manager_details(email, username, password)
-        return Response(status=status.HTTP_200_OK)
+        try:
+            send_manager_details(email, username, password)
+        except Exception as e:
+            print(f"[AddManager] Email sending failed: {e}")
+            return Response(
+                {'message': 'Manager created but email failed to send. Please check email configuration.', 'email_error': str(e)},
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response({'message': 'Manager created successfully and credentials sent via email.'}, status=status.HTTP_201_CREATED)
 
 def send_manager_details(email,username,password):
     # Construct email subject and message
