@@ -62,7 +62,6 @@ class login(APIView):
 class EventDetails(APIView):
     def get(self,request):
         events = Events.objects.all().order_by('-created_at')
-        print(config('EMAIL_PORT'))
         serializer = EventSerializer(events,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
