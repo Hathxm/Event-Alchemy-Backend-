@@ -2,8 +2,7 @@
 
 from celery import shared_task
 from backend.celery import app
-from django.core.mail import send_mail
-from django.conf import settings
+from backend.email_utils import send_email
 from user.models import Booking
 from datetime import datetime
 from vendors.models import Vendors
@@ -35,7 +34,7 @@ def notify_vendors(self):
                            f"Please ensure you are prepared for the services you have been booked for.\n\n"
                            f"Best regards,\n"
                            f"Event Management Team")
-                send_mail(subject, message, settings.EMAIL_HOST_USER, [vendor.email])
+                send_email(subject=subject, to=vendor.email, text=message)
                
     return "Notifications sent to vendors."
 

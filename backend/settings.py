@@ -195,12 +195,12 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 
-EMAIL_BACKEND=config('EMAIL_BACKEND')
-EMAIL_HOST=config('EMAIL_HOST')
-EMAIL_PORT=config('EMAIL_PORT', cast=int) 
-EMAIL_USE_TLS=config('EMAIL_USE_TLS', cast=bool)
-EMAIL_HOST_USER=config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD=config('EMAIL_HOST_PASSWORD')
+# EMAIL_BACKEND=config('EMAIL_BACKEND')
+# EMAIL_HOST=config('EMAIL_HOST')
+# EMAIL_PORT=config('EMAIL_PORT', cast=int) 
+# EMAIL_USE_TLS=config('EMAIL_USE_TLS', cast=bool)
+# EMAIL_HOST_USER=config('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD=config('EMAIL_HOST_PASSWORD')
 
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'

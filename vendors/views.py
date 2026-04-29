@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from .models import Vendors,vendorservices
 from rest_framework.response import Response
 from rest_framework import status
-from django.core.mail import send_mail
+from backend.email_utils import send_email
 from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password
 from django.db import IntegrityError,DatabaseError
@@ -69,12 +69,11 @@ class Signup(APIView):
             return Response({'error': f'Something went wrong: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 def send_otp_email(email, otp):
-    # Construct email subject and message
-    subject = 'Your OTP for account verification'
-    message = f'Your OTP is: {otp}'
-    
-    # Send email
-    send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+    send_email(
+        subject='Your OTP for account verification',
+        to=email,
+        text=f'Your OTP is: {otp}',
+    )
 
   
 class GoogleSignup(APIView):
@@ -418,12 +417,10 @@ class ForgotPasswordView(APIView):
 
         # Send the OTP via email
         try:
-            send_mail(
-                'Password Reset Request',
-                f'Your one-time password (OTP) is: {otp}',
-                settings.EMAIL_HOST_USER,  # Use the DEFAULT_FROM_EMAIL from settings
-                [email],
-                fail_silently=False,
+            send_email(
+                subject='Password Reset Request',
+                to=email,
+                text=f'Your one-time password (OTP) is: {otp}',
             )
             return Response({'otp': otp, 'message': 'A one-time password has been sent to your email.'}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -468,14 +465,11 @@ class ContactFormView(APIView):
             email = request.data.get('email')
             message = request.data.get('message')
 
-            # Email content
-            subject = 'New Contact Form Submission'
-            body = f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
-            from_email = 'eventalchemy1246@gmail.com'
-            recipient_list = ['mohammedhathimeasa@gmail.com']  # Replace with superadmin's email
-
-            # Send email
-            send_mail(subject, body, from_email, recipient_list)
+            send_email(
+                subject='New Contact Form Submission',
+                to='mohammedhathimeasa@gmail.com',
+                text=f"Name: {name}\nEmail: {email}\nMessage:\n{message}",
+            )
 
             # If email is successfully sent, return 200 status
             return Response({'status': 'success', 'message': 'Email sent successfully'}, status=status.HTTP_200_OK)

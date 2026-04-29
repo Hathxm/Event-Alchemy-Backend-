@@ -26,12 +26,11 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_bytes 
 from django.contrib import messages
-from django.core.mail import EmailMultiAlternatives
+from backend.email_utils import send_email
 from django.db.models import Max,Sum
 from django.db.models.functions import ExtractMonth, ExtractYear
 from datetime import datetime
 from django.conf import settings
-from django.core.mail import send_mail
 import random
 import string
 from django.db import transaction
@@ -361,15 +360,11 @@ class PasswordResetRequestView(APIView):
                 'reset_link': reset_link,
             })
 
-            # Using EmailMultiAlternatives to send HTML email
-            email_message = EmailMultiAlternatives(
+            send_email(
                 subject=mail_subject,
-                body='',
-                from_email=settings.EMAIL_HOST_USER,
-                to=[email],
+                to=email,
+                html=message,
             )
-            email_message.attach_alternative(message, "text/html")
-            email_message.send()
 
             return Response({"message": "Password reset link sent."}, status=status.HTTP_200_OK)
         else:
@@ -540,12 +535,10 @@ class ForgotPasswordView(APIView):
 
         # Send the OTP via email
         try:
-            send_mail(
-                'Password Reset Request',
-                f'Your one-time password (OTP) is: {otp}',
-                settings.EMAIL_HOST_USER,  # Use the DEFAULT_FROM_EMAIL from settings
-                [email],
-                fail_silently=False,
+            send_email(
+                subject='Password Reset Request',
+                to=email,
+                text=f'Your one-time password (OTP) is: {otp}',
             )
             return Response({'otp': otp, 'message': 'A one-time password has been sent to your email.'}, status=status.HTTP_200_OK)
         except Exception as e:

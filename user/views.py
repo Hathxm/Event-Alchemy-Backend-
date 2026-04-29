@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.core.mail import send_mail,EmailMultiAlternatives
+from backend.email_utils import send_email
 from django.contrib.auth.hashers import make_password
 from django.utils.crypto import get_random_string
 from .models import Customusers,Booking,Shift,Booking_status,Service_Rating
@@ -143,12 +143,11 @@ class Signup(APIView):
             return Response({'error': f'Something went wrong: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 def send_otp_email(email, otp):
-    # Construct email subject and message
-    subject = 'Your OTP for account verification'
-    message = f'Your OTP is: {otp}'
-    
-    # Send email
-    send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+    send_email(
+        subject='Your OTP for account verification',
+        to=email,
+        text=f'Your OTP is: {otp}',
+    )
 
 
 class OTP(APIView):
@@ -208,12 +207,12 @@ class resend_otp(APIView):
 
 def resend_otp_mail(mail):
         otp = get_random_string(length=6, allowed_chars='1234567890')
-        email=mail
 
-        subject = 'Your OTP for account verification'
-        message = f'Your OTP is: {otp}'
-
-        send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+        send_email(
+            subject='Your OTP for account verification',
+            to=mail,
+            text=f'Your OTP is: {otp}',
+        )
         return otp
 
 
@@ -636,15 +635,11 @@ class PasswordResetRequestView(APIView):
                 'reset_link': reset_link,
             })
 
-            # Using EmailMultiAlternatives to send HTML email
-            email_message = EmailMultiAlternatives(
+            send_email(
                 subject=mail_subject,
-                body='',
-                from_email='eventalchemy1246@gmail.com',
-                to=[email],
+                to=email,
+                html=message,
             )
-            email_message.attach_alternative(message, "text/html")
-            email_message.send()
 
             return Response({"message": "Password reset link sent."}, status=status.HTTP_200_OK)
         else:
@@ -780,17 +775,15 @@ class ForgotPasswordView(APIView):
 
         # Send the OTP via email
         try:
-            send_mail(
-                'Password Reset Request',
-                f'Your one-time password (OTP) is: {otp}',
-                'eventalchemy1246@gmail.com',  # Use the hardcoded email
-                [email],
-                fail_silently=False,
+            send_email(
+                subject='Password Reset Request',
+                to=email,
+                text=f'Your one-time password (OTP) is: {otp}',
             )
             return Response({'otp': otp, 'message': 'A one-time password has been sent to your email.'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'message': 'Failed to send email. Please try again later.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
 
     def get(self, request):
         email = request.query_params.get('email')  # Use `request.query_params` to retrieve query parameters
@@ -934,14 +927,11 @@ class ContactFormView(APIView):
             email = request.data.get('email')
             message = request.data.get('message')
 
-            # Email content
-            subject = 'New Contact Form Submission'
-            body = f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
-            from_email = 'eventalchemy1246@gmail.com'  # Use the hardcoded email
-            recipient_list = ['mohammedhathimeasa@gmail.com']  # Replace with superadmin's email
-
-            # Send email
-            send_mail(subject, body, from_email, recipient_list)
+            send_email(
+                subject='New Contact Form Submission',
+                to='mohammedhathimeasa@gmail.com',
+                text=f"Name: {name}\nEmail: {email}\nMessage:\n{message}",
+            )
 
             # If email is successfully sent, return 200 status
             return Response({'status': 'success', 'message': 'Email sent successfully'}, status=status.HTTP_200_OK)

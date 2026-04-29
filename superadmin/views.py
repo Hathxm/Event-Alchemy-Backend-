@@ -7,7 +7,7 @@ from rest_framework import status
 from .models import Events
 from .serializers import EventSerializer,AdminSerializer
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
+from backend.email_utils import send_email
 from django.contrib.auth.hashers import make_password
 from user.models import Customusers,Booking
 from user.serializers import CustomuserSerializer,BookingSerializer
@@ -18,7 +18,6 @@ from rest_framework.permissions import IsAuthenticated
 from vendors.serializers import VendorSerializer
 from vendors.models import Vendors
 from decouple import config
-from django.conf import settings
 
 
 
@@ -146,13 +145,16 @@ class AddManager(APIView):
 
         return Response({'message': 'Manager created successfully and credentials sent via email.'}, status=status.HTTP_201_CREATED)
 
-def send_manager_details(email,username,password):
-    # Construct email subject and message
-    subject = 'You Manager Account Details At EventAlchemy.com'
-    message = f' Use Your Username And Password to Log In \nUsername:{username}\npassword:{password}'
-    
-    # Send email
-    send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+def send_manager_details(email, username, password):
+    send_email(
+        subject="Your Manager Account Details At EventAlchemy.com",
+        to=email,
+        html=(
+            f"<p>Use your username and password to log in:</p>"
+            f"<p><b>Username:</b> {username}</p>"
+            f"<p><b>Password:</b> {password}</p>"
+        ),
+    )
 
 class ManagerManagement(APIView):
     def patch(self,request):

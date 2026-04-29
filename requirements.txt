@@ -65,6 +65,7 @@ python-dateutil==2.9.0.post0
 python-decouple==3.8
 redis==5.0.6
 requests==2.32.3
+google-api-python-client==2.149.0
 requests-oauthlib==2.0.0
 rsa==4.9
 s3transfer==0.10.2
